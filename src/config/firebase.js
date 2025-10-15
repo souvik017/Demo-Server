@@ -1,24 +1,18 @@
 // src/config/firebase.js
 import admin from 'firebase-admin';
-import { readFileSync, existsSync } from 'fs';
-import { resolve } from 'path';
 
-// Resolve path to JSON file
-const keyPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || './src/config/serviceAccountKey.json';
-const absPath = resolve(keyPath);
-
-// Check if file exists
-if (!existsSync(absPath)) {
-  console.error('❌ Firebase service account key not found at', absPath);
+// Check for service account in env
+if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+  console.error('❌ FIREBASE_SERVICE_ACCOUNT environment variable not set.');
   process.exit(1);
 }
 
-// Read JSON file safely
 let serviceAccount;
 try {
-  serviceAccount = JSON.parse(readFileSync(absPath, 'utf-8'));
+  // Parse the JSON string from env
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 } catch (err) {
-  console.error('❌ Error parsing Firebase service account JSON:', err.message);
+  console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT JSON:', err.message);
   process.exit(1);
 }
 
