@@ -25,19 +25,19 @@ jobs:
       - name: Build backend (if needed)
         run: npm run build || echo "No build script"
 
-      # Create service account JSON from secret
+      # Create Firebase Service Account from secret
       - name: Create Firebase Service Account
         run: |
           echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > ./src/config/serviceAccountKey.json
 
+      # Install Railway CLI
+      - name: Install Railway CLI
+        run: curl -sSL https://raw.githubusercontent.com/railwayapp/cli/master/install.sh | sh
+
       # Deploy to Railway
       - name: Deploy to Railway
-        uses: railwayapp/cli-action@v1
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          serviceId: ${{ secrets.RAILWAY_SERVICE_ID }}
         env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           PORT: ${{ secrets.PORT }}
           MONGO_URI: ${{ secrets.MONGO_URI }}
           FIREBASE_SERVICE_ACCOUNT_PATH: ./src/config/serviceAccountKey.json
@@ -45,5 +45,9 @@ jobs:
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
           REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
           REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-          FEED_CACHE_KEY: ${{ secrets.FEED_CACHE_KEY }}
-          FEED_CACHE_TTL: ${{ secrets.FEED_CACHE_TTL }}
+          FEED_CACHE_KEY: feed:recent
+          FEED_CACHE_TTL: 10
+        run: |
+          railway login --apiKey $RAILWAY_TOKEN
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }} ${{ secrets.RAILWAY_SERVICE_ID }}
+          railway up --detach
