@@ -4,7 +4,6 @@ import { resolve } from 'path';
 
 let serviceAccount;
 
-// Cloud / Railway: JSON string
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -13,9 +12,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     console.error('❌ Invalid JSON in FIREBASE_SERVICE_ACCOUNT:', err.message);
     process.exit(1);
   }
-}
-// Local dev: file path
-else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+} else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
   const keyPath = resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
   if (!existsSync(keyPath)) {
     console.error('❌ Firebase service account key not found at', keyPath);
