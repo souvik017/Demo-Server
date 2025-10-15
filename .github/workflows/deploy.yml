@@ -48,5 +48,5 @@ jobs:
           FEED_CACHE_KEY: feed:recent
           FEED_CACHE_TTL: 10
         run: |
-          railway link ${{ secrets.RAILWAY_PROJECT_ID }} ${{ secrets.RAILWAY_SERVICE_ID }}
+          # Deploy directly without linking
           railway up --detach
