@@ -5,28 +5,28 @@ import { resolve } from 'path';
 
 let serviceAccount;
 
+// 1️⃣ Check if cloud env JSON is present
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  // Cloud / Railway: JSON string from env
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    console.log('🔥 Using FIREBASE_SERVICE_ACCOUNT from env');
+    console.log('🔥 Using FIREBASE_SERVICE_ACCOUNT from env (cloud)');
   } catch (err) {
-    console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT JSON:', err.message);
+    console.error('❌ Invalid JSON in FIREBASE_SERVICE_ACCOUNT:', err.message);
     process.exit(1);
   }
-} else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
-  // Local development: path to JSON file
+}
+// 2️⃣ Otherwise check local path
+else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
   const keyPath = resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
   if (!existsSync(keyPath)) {
     console.error('❌ Firebase service account key not found at', keyPath);
     process.exit(1);
   }
-
   try {
     serviceAccount = JSON.parse(readFileSync(keyPath, 'utf-8'));
     console.log('🔥 Using FIREBASE_SERVICE_ACCOUNT_PATH from local file');
   } catch (err) {
-    console.error('❌ Error parsing Firebase service account JSON:', err.message);
+    console.error('❌ Error parsing local Firebase service account JSON:', err.message);
     process.exit(1);
   }
 } else {
@@ -34,7 +34,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   process.exit(1);
 }
 
-// Initialize Firebase Admin if not already initialized
+// 3️⃣ Initialize Firebase Admin
 if (!admin.apps.length) {
   try {
     admin.initializeApp({
@@ -47,6 +47,5 @@ if (!admin.apps.length) {
   }
 }
 
-// Export auth instance
 export const auth = admin.auth();
 export default admin;
