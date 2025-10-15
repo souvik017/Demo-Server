@@ -34,19 +34,3 @@ jobs:
       - name: Install Railway CLI
         run: curl -sSL https://raw.githubusercontent.com/railwayapp/cli/master/install.sh | sh
 
-      # Deploy to Railway
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          PORT: ${{ secrets.PORT }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          FIREBASE_SERVICE_ACCOUNT_PATH: ./src/config/serviceAccountKey.json
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
-          REDIS_PORT: ${{ secrets.REDIS_PORT }}
-          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
-          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-          FEED_CACHE_KEY: feed:recent
-          FEED_CACHE_TTL: 10
-        run: |
-          # Deploy directly without linking
-          railway up --detach
