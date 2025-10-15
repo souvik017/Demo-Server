@@ -48,6 +48,5 @@ jobs:
           FEED_CACHE_KEY: feed:recent
           FEED_CACHE_TTL: 10
         run: |
-          railway login --apiKey $RAILWAY_TOKEN
           railway link ${{ secrets.RAILWAY_PROJECT_ID }} ${{ secrets.RAILWAY_SERVICE_ID }}
           railway up --detach
