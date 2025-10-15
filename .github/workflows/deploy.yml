@@ -1,0 +1,49 @@
+name: Deploy Backend to Railway
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Railway
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build backend (if needed)
+        run: npm run build || echo "No build script"
+
+      # Create service account JSON from secret
+      - name: Create Firebase Service Account
+        run: |
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}" > ./src/config/serviceAccountKey.json
+
+      # Deploy to Railway
+      - name: Deploy to Railway
+        uses: railwayapp/railway-action@v1
+        with:
+          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
+          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
+          serviceId: ${{ secrets.RAILWAY_SERVICE_ID }}
+        env:
+          PORT: ${{ secrets.PORT }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          FIREBASE_SERVICE_ACCOUNT_PATH: ./src/config/serviceAccountKey.json
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          FEED_CACHE_KEY: ${{ secrets.FEED_CACHE_KEY }}
+          FEED_CACHE_TTL: ${{ secrets.FEED_CACHE_TTL }}
