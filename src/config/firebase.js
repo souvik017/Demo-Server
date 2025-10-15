@@ -1,21 +1,20 @@
-// src/config/firebase.js
 import admin from 'firebase-admin';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 let serviceAccount;
 
-// 1️⃣ Check if cloud env JSON is present
+// Cloud / Railway: JSON string
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    console.log('🔥 Using FIREBASE_SERVICE_ACCOUNT from env (cloud)');
+    console.log('🔥 Using FIREBASE_SERVICE_ACCOUNT from env');
   } catch (err) {
     console.error('❌ Invalid JSON in FIREBASE_SERVICE_ACCOUNT:', err.message);
     process.exit(1);
   }
 }
-// 2️⃣ Otherwise check local path
+// Local dev: file path
 else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
   const keyPath = resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH);
   if (!existsSync(keyPath)) {
@@ -30,11 +29,10 @@ else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
     process.exit(1);
   }
 } else {
-  console.error('❌ No Firebase service account provided. Set either FIREBASE_SERVICE_ACCOUNT or FIREBASE_SERVICE_ACCOUNT_PATH');
+  console.error('❌ No Firebase service account provided.');
   process.exit(1);
 }
 
-// 3️⃣ Initialize Firebase Admin
 if (!admin.apps.length) {
   try {
     admin.initializeApp({
